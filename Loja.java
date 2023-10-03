@@ -1,4 +1,4 @@
-package comercio;
+package comercio2;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -6,11 +6,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Loja {
-	private static ArrayList<Produto> listaProdutos = new ArrayList<>();
-	private static double saldoComercio = 1000.0;
+	private ArrayList<Produto> listaProdutos = new ArrayList<>();
+	private double saldoComercio = 1000.0;
+	private ArrayList<Double> historicoTransacoes = new ArrayList<>();
+	private double saldoSessaoAtual = 1000.0;
+
 	static Scanner entrada = new Scanner(System.in);
 
 	void listarProdutos() {
@@ -18,8 +22,8 @@ public class Loja {
 			System.out.println("Nenhum produto cadastrado no sistema.");
 		} else {
 			System.out.println("Lista de Produtos:");
-			for (Produto produto : listaProdutos) {
-				produto.exibirProduto();
+			for (Produto produto : listaProdutos) {				
+			System.out.println(produto.toString());	
 			}
 		}
 	}
@@ -34,11 +38,12 @@ public class Loja {
 			System.out.println("3. Periféricos e Acessórios");
 
 			int categoriaEscolhida = entrada.nextInt();
+			entrada.nextLine();
 
 			System.out.println("Produtos da categoria escolhida:");
 			for (Produto produto : listaProdutos) {
 				if (produto.getCategoria() == categoriaEscolhida) {
-					produto.exibirProduto();
+					System.out.println(produto.toString());
 				}
 			}
 		}
@@ -47,40 +52,79 @@ public class Loja {
 	void cadastrarProduto() {
 		System.out.print("Digite o nome do produto: ");
 		String nome = entrada.nextLine();
-
-		System.out.println("Escolha a categoria do produto:");
-		System.out.println("1. Computadores e Laptops");
-		System.out.println("2. Componentes de Hardware");
-		System.out.println("3. Periféricos e Acessórios");
-
-		int categoria = 0;
-
-		try {
-			String categoriaInput = entrada.next();
-			categoria = Integer.parseInt(categoriaInput);
-		} catch (NumberFormatException e) {
-			System.out.println("Categoria inválida. Escolha um número entre 1 e 3.");
-			return;
-		}
-
-		if (categoria < 1 || categoria > 3) {
-			System.out.println("Categoria inválida. Escolha um número entre 1 e 3.");
-			return;
-		}
-
+		
 		System.out.print("Digite o custo de compra do produto: ");
 		double custoCompra = entrada.nextDouble();
 
 		System.out.print("Digite o valor de venda do produto: ");
 		double valorVenda = entrada.nextDouble();
-
-		entrada.nextLine();
-
+		
 		int codigo = listaProdutos.size() + 1;
-		listaProdutos.add(new Produto(nome, codigo, categoria, custoCompra, valorVenda));
 
-		System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
-	}
+		
+		System.out.println("1. Computadores e Laptops");
+		System.out.println("2. Componentes de Hardware");
+		System.out.println("3. Periféricos e Acessórios");
+		System.out.print("Escolha a categoria do produto: ");
+
+		int categoria = 0;
+
+		try {
+		    categoria = entrada.nextInt();
+		    entrada.nextLine(); 
+		    if (categoria < 1 || categoria > 3) {
+		        System.out.println("Categoria inválida. Escolha um número entre 1 e 3");
+		        return;
+		    }
+		} catch (InputMismatchException e) {
+		    System.out.println("Categoria inválida. Escolha um número entre 1 e 3");
+		    return;
+		}
+
+
+		if (categoria == 1) {
+			
+			System.out.print("Digite o sistema operacional do dispositivo: ");
+			String sistemaOperacional = entrada.nextLine();
+
+			System.out.print("Digite a quantidade de RAM do dispositivo: ");
+			int quantidadeRam = entrada.nextInt();
+			listaProdutos.add(new Categoria.computadorELaptop(nome, listaProdutos.size() + 1, categoria, custoCompra, valorVenda,
+					"Computadores e Laptops", sistemaOperacional, quantidadeRam));
+			
+			System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
+
+		} else if (categoria == 2) {
+			System.out.print("Digite o pais de origem do componente: ");
+			String paisOrigem = entrada.nextLine();
+
+			System.out.print("Digite o fabricante do componente: ");
+			String fabricante = entrada.nextLine();
+
+			listaProdutos.add(new Categoria.componentesHardware(nome, listaProdutos.size() + 1, categoria, custoCompra, valorVenda,
+					"Componentes de Hardware", paisOrigem, fabricante));
+			
+			System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
+
+		} else if (categoria == 3) {
+			System.out.print("Digite o tipo do equipamento: ");
+			String tipo = entrada.nextLine();
+
+			System.out.print("Equipamento sem fio? ");
+			String semFio = entrada.nextLine();
+
+			listaProdutos.add(new Categoria.perifericosEAcessorios(nome, listaProdutos.size() + 1, categoria, custoCompra,valorVenda,
+					"Periféricos e Acessórios", tipo, semFio));
+			
+			System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
+			
+			
+		}
+					
+			//listaProdutos.add(new Produto(nome, codigo, categoria, custoCompra, valorVenda));
+
+		}
+	
 
 	void adicionarEstoque() {
 		if (listaProdutos.isEmpty()) {
@@ -92,7 +136,7 @@ public class Loja {
 
 		System.out.print("Digite o código do produto que deseja adicionar estoque: ");
 		int codigo = entrada.nextInt();
-		
+
 		boolean produtoEncontrado = false;
 
 		for (Produto produto : listaProdutos) {
@@ -106,19 +150,19 @@ public class Loja {
 					produto.adicionarEstoque(quantidade);
 					saldoComercio -= custoTotal;
 					System.out.println("Estoque atualizado com sucesso!");
-				}else if (quantidade <= 0) {
+				} else if (quantidade <= 0) {
 					System.out.println("Quantidade invalída");
-					
-				}else {System.out.println("Saldo insuficiente no caixa da loja");}
+
+				} else {
+					System.out.println("Saldo insuficiente no caixa da loja");
+				}
 
 			}
 
 		}
 		if (!produtoEncontrado)
-		System.out.println("Código inválido!");
-	}	
-
-
+			System.out.println("Código inválido!");
+	}
 
 	void removerProduto() {
 		if (listaProdutos.isEmpty()) {
@@ -130,9 +174,8 @@ public class Loja {
 
 		System.out.print("Digite o código do produto que deseja remover: ");
 		int codigo = entrada.nextInt();
-		
-		boolean produtoEncontrado = false;
 
+		boolean produtoEncontrado = false;
 
 		for (Produto produto : listaProdutos) {
 			if (produto.getCodigo() == codigo) {
@@ -152,10 +195,11 @@ public class Loja {
 			}
 		}
 		if (!produtoEncontrado)
-		System.out.println("Código inválido!");
+			System.out.println("Código inválido!");
 	}
 
 	void venderProduto() {
+
 		if (listaProdutos.isEmpty()) {
 			System.out.println("Não existem produtos cadastrados para vender!");
 			return;
@@ -173,18 +217,20 @@ public class Loja {
 
 				if (quantidadeVendida <= produto.getEstoque()) {
 					produto.vender(quantidadeVendida);
-					saldoComercio += quantidadeVendida * produto.getValorVenda();
+					double valorVenda = quantidadeVendida * produto.getValorVenda();
+					saldoComercio += valorVenda;
+
 					System.out.println("Venda realizada com sucesso! Estoque atualizado.");
 					return;
 				} else {
 					System.out.println("Quantidade insuficiente em estoque!");
 					return;
 				}
-			}		System.out.println("Código inválido!");}
-
+			}
+			System.out.println("Código inválido!");
 		}
-		
-	
+
+	}
 
 	void gerarRelatorio() {
 		System.out.println("\nRelatório:");
@@ -204,7 +250,7 @@ public class Loja {
 				double valorVenda = Double.parseDouble(partes[4]);
 				int estoque = Integer.parseInt(partes[5]);
 				listaProdutos.add(new Produto(nome, codigo, categoria, custoCompra, valorVenda));
-				listaProdutos.get(listaProdutos.size() - 1).adicionarEstoque(estoque);
+				listaProdutos.get(listaProdutos.size() - 1).setEstoque(estoque);
 			}
 		} catch (IOException e) {
 			System.out.println("Erro ao carregar os dados.");
@@ -240,4 +286,60 @@ public class Loja {
 		}
 	}
 
+	void relatorioSessaoAtual() {
+		System.out.println("Relatório da sessão atual: ");
+
+		double totalComprasSessaoAtual = 0.0;
+		double totalVendasSessaoAtual = 0.0;
+
+		for (Double transacao : historicoTransacoes) {
+			if (transacao < 0) {
+				totalComprasSessaoAtual += transacao;
+			} else {
+				totalVendasSessaoAtual += transacao;
+			}
+		}
+
+		double saldoInicial = 1000.0;
+		double saldoFinal = saldoSessaoAtual;
+
+		System.out.println("Total Compras na Sessão Atual: R$" + (-totalComprasSessaoAtual));
+		System.out.println("Total Vendas na Sessão Atual: R$" + totalVendasSessaoAtual);
+		System.out.println("Saldo Arrecadado na Sessão Atual: R$" + (saldoFinal - saldoInicial));
+	}
+
+	void relatorioHistoricoCompleto() {
+		System.out.println("Relatório geral: ");
+
+		double totalComprasHistoricoCompleto = 0.0;
+		double totalVendasHistoricoCompleto = 0.0;
+
+		for (Double transacao : historicoTransacoes) {
+			if (transacao < 0) {
+				totalComprasHistoricoCompleto += transacao;
+			} else {
+				totalVendasHistoricoCompleto += transacao;
+			}
+		}
+
+		double saldoInicial = 1000.0;
+		double saldoFinal = saldoComercio;
+
+		System.out.println("Total Compras no Histórico Completo: R$" + totalComprasHistoricoCompleto);
+		System.out.println("Total Vendas no Histórico Completo: R$" + totalVendasHistoricoCompleto);
+		System.out.println("Saldo Arrecadado no Histórico Completo: R$" + (saldoFinal - saldoInicial));
+	}
+
+	class Transacao {
+		private double valor;
+
+		public Transacao(double valor) {
+			this.valor = valor;
+		}
+
+		public double getValor() {
+			return valor;
+		}
+
+	}
 }
