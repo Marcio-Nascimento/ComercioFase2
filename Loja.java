@@ -48,7 +48,7 @@ public class Loja {
 
 				if (produto.getCategoria() == categoriaEscolhida) {
 					produtoEncontrado = true;
-					System.out.println(produto.toString());
+					System.out.println(produto.toStringCategoria());
 				}
 
 			}
@@ -69,7 +69,32 @@ public class Loja {
 		double valorVenda = entrada.nextDouble();
 
 		int codigo = listaProdutos.size() + 1;
-
+		
+		int estoque = 0;
+		
+		System.out.print("Deseja adicionar estoque? \n1)Sim \n2)Não \nDigite: ");
+		int desejaEstoque = entrada.nextInt();
+		
+		if(desejaEstoque == 1) {
+			System.out.print("Digite o estoque: ");
+			int quantidade = entrada.nextInt();
+			entrada.nextLine();
+			
+			if(quantidade > 0) {
+				estoque = quantidade;
+			
+			} else {
+				System.out.println("Digite um estoque válido!");
+				return;
+			}
+			
+		} else if (desejaEstoque ==2) {
+			estoque = 0;
+		
+		} else {
+			System.out.println("Opção inválida!");
+		}
+							
 		System.out.println("1. Computadores e Laptops");
 		System.out.println("2. Componentes de Hardware");
 		System.out.println("3. Periféricos e Acessórios");
@@ -91,39 +116,39 @@ public class Loja {
 
 		if (categoria == 1) {
 
-			System.out.print("Digite o sistema operacional do dispositivo: ");
+			System.out.print("Descreva o sistema operacional do dispositivo: ");
 			String sistemaOperacional = entrada.nextLine();
 
 			System.out.print("Digite a quantidade de RAM do dispositivo: ");
 			int quantidadeRam = entrada.nextInt();
-			listaProdutos.add(new Categoria.computadorELaptop(nome, listaProdutos.size() + 1, categoria, custoCompra,
+			listaProdutos.add(new Categoria.computadorELaptop(nome, listaProdutos.size() + 1, categoria, estoque, custoCompra,
 					valorVenda, "Computadores e Laptops", sistemaOperacional, quantidadeRam));
 
-			System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
+			System.out.printf("<%s> cadastrado com sucesso! | Código: <%d> | Estoque: <%d>", nome, codigo, estoque);
 
 		} else if (categoria == 2) {
-			System.out.print("Digite o pais de origem do componente: ");
+			System.out.print("Descreva o país de origem do componente: ");
 			String paisOrigem = entrada.nextLine();
 
-			System.out.print("Digite o fabricante do componente: ");
+			System.out.print("Descreva o fabricante do componente: ");
 			String fabricante = entrada.nextLine();
 
-			listaProdutos.add(new Categoria.componentesHardware(nome, listaProdutos.size() + 1, categoria, custoCompra,
+			listaProdutos.add(new Categoria.componentesHardware(nome, listaProdutos.size() + 1, categoria, estoque, custoCompra,
 					valorVenda, "Componentes de Hardware", paisOrigem, fabricante));
 
-			System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
+			System.out.printf("<%s> cadastrado com sucesso! | Código: <%d> | Estoque: <%d>", nome, codigo, estoque);
 
 		} else if (categoria == 3) {
-			System.out.print("Digite o tipo do equipamento: ");
+			System.out.print("Descreva o tipo do equipamento: ");
 			String tipo = entrada.nextLine();
 
-			System.out.print("Equipamento sem fio? ");
+			System.out.print("Equipamento sem fio? (Sim/Não): ");
 			String semFio = entrada.nextLine();
 
-			listaProdutos.add(new Categoria.perifericosEAcessorios(nome, listaProdutos.size() + 1, categoria,
+			listaProdutos.add(new Categoria.perifericosEAcessorios(nome, listaProdutos.size() + 1, categoria, estoque,
 					custoCompra, valorVenda, "Periféricos e Acessórios", tipo, semFio));
 
-			System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
+			System.out.printf("<%s> cadastrado com sucesso! | Código: <%d> | Estoque: <%d>", nome, codigo, estoque);
 
 		}
 
@@ -258,7 +283,7 @@ public class Loja {
 				double custoCompra = Double.parseDouble(partes[3]);
 				double valorVenda = Double.parseDouble(partes[4]);
 				int estoque = Integer.parseInt(partes[5]);
-				listaProdutos.add(new Produto(nome, codigo, categoria, custoCompra, valorVenda));
+				listaProdutos.add(new Produto(nome, codigo, categoria, estoque, custoCompra, valorVenda));
 				listaProdutos.get(listaProdutos.size() - 1).setEstoque(estoque);
 			}
 		} catch (IOException e) {
