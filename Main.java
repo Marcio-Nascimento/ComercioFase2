@@ -1,4 +1,4 @@
-package comercio;
+package comercio2;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +21,10 @@ public class Main {
             entrada.nextLine();
 
             if (opcao == 1) {
-                System.out.println("Escolha a opção:");
+                
                 System.out.println("1) Listar todos os produtos");
                 System.out.println("2) Listar produtos por categoria");
+                System.out.print("Escolha a opÃ§Ã£o:");
 
                 int listarOpcao = entrada.nextInt();
 
@@ -32,7 +33,7 @@ public class Main {
                 } else if (listarOpcao == 2) {
                     loja.listarProdutosPorCategoria();
                 } else {
-                    System.out.println("Opção inválida.");
+                    System.out.println("OpÃ§Ã£o invÃ¡lida.");
                 }
             } else if (opcao == 2) {
                 loja.cadastrarProduto();
@@ -43,13 +44,14 @@ public class Main {
             } else if (opcao == 5) {
                 loja.venderProduto();
             } else if (opcao == 6) {
-                loja.gerarRelatorio();
+                loja.relatorioSessaoAtual();
+                loja.relatorioHistoricoCompleto();
             } else if (opcao == 7) {
                 loja.salvarDados();
                 loja.salvarSaldo();
-                System.out.println("Saindo do programa.");
+                System.out.println("Obrigado por usar nosso sistema!");
             } else {
-                System.out.println("Opção inválida, escolha uma opção válida.");
+                System.out.println("OpÃ§Ã£o invÃ¡lida, escolha uma opÃ§Ã£o vÃ¡lida.");
             }
         }
         entrada.close();
@@ -62,9 +64,9 @@ public class Main {
         System.out.println("3) Adicionar estoque de um produto");
         System.out.println("4) Remover produto");
         System.out.println("5) Vender produto");
-        System.out.println("6) Relatório de compra e vendas");
+        System.out.println("6) RelatÃ³rio de compra e vendas");
         System.out.println("7) Sair do programa");
-        System.out.print("\nEscolha uma opção: ");
+        System.out.print("\nEscolha uma opÃ§Ã£o: ");
     }
 
     private static void criarArquivo() {

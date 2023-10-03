@@ -22,20 +22,21 @@ public class Loja {
 			System.out.println("Nenhum produto cadastrado no sistema.");
 		} else {
 			System.out.println("Lista de Produtos:");
-			for (Produto produto : listaProdutos) {				
-			System.out.println(produto.toString());	
+			for (Produto produto : listaProdutos) {
+				System.out.println(produto.toString());
 			}
 		}
 	}
 
 	void listarProdutosPorCategoria() {
 		if (listaProdutos.isEmpty()) {
-			System.out.println("Nenhum produto cadastrado no sistema.");
+			System.out.println("Não existem produtos cadastrados!");
 		} else {
-			System.out.println("Escolha a categoria:");
-			System.out.println("1. Computadores e Laptops");
+
+			System.out.println("\n1. Computadores e Laptops");
 			System.out.println("2. Componentes de Hardware");
 			System.out.println("3. Periféricos e Acessórios");
+			System.out.print("Escolha a categoria:");
 
 			int categoriaEscolhida = entrada.nextInt();
 			entrada.nextLine();
@@ -44,7 +45,9 @@ public class Loja {
 			for (Produto produto : listaProdutos) {
 				if (produto.getCategoria() == categoriaEscolhida) {
 					System.out.println(produto.toString());
+
 				}
+
 			}
 		}
 	}
@@ -52,16 +55,15 @@ public class Loja {
 	void cadastrarProduto() {
 		System.out.print("Digite o nome do produto: ");
 		String nome = entrada.nextLine();
-		
+
 		System.out.print("Digite o custo de compra do produto: ");
 		double custoCompra = entrada.nextDouble();
 
 		System.out.print("Digite o valor de venda do produto: ");
 		double valorVenda = entrada.nextDouble();
-		
+
 		int codigo = listaProdutos.size() + 1;
 
-		
 		System.out.println("1. Computadores e Laptops");
 		System.out.println("2. Componentes de Hardware");
 		System.out.println("3. Periféricos e Acessórios");
@@ -70,28 +72,27 @@ public class Loja {
 		int categoria = 0;
 
 		try {
-		    categoria = entrada.nextInt();
-		    entrada.nextLine(); 
-		    if (categoria < 1 || categoria > 3) {
-		        System.out.println("Categoria inválida. Escolha um número entre 1 e 3");
-		        return;
-		    }
+			categoria = entrada.nextInt();
+			entrada.nextLine();
+			if (categoria < 1 || categoria > 3) {
+				System.out.println("Categoria inválida. Escolha um número entre 1 e 3");
+				return;
+			}
 		} catch (InputMismatchException e) {
-		    System.out.println("Categoria inválida. Escolha um número entre 1 e 3");
-		    return;
+			System.out.println("Categoria inválida. Escolha um número entre 1 e 3");
+			return;
 		}
 
-
 		if (categoria == 1) {
-			
+
 			System.out.print("Digite o sistema operacional do dispositivo: ");
 			String sistemaOperacional = entrada.nextLine();
 
 			System.out.print("Digite a quantidade de RAM do dispositivo: ");
 			int quantidadeRam = entrada.nextInt();
-			listaProdutos.add(new Categoria.computadorELaptop(nome, listaProdutos.size() + 1, categoria, custoCompra, valorVenda,
-					"Computadores e Laptops", sistemaOperacional, quantidadeRam));
-			
+			listaProdutos.add(new Categoria.computadorELaptop(nome, listaProdutos.size() + 1, categoria, custoCompra,
+					valorVenda, "Computadores e Laptops", sistemaOperacional, quantidadeRam));
+
 			System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
 
 		} else if (categoria == 2) {
@@ -101,9 +102,9 @@ public class Loja {
 			System.out.print("Digite o fabricante do componente: ");
 			String fabricante = entrada.nextLine();
 
-			listaProdutos.add(new Categoria.componentesHardware(nome, listaProdutos.size() + 1, categoria, custoCompra, valorVenda,
-					"Componentes de Hardware", paisOrigem, fabricante));
-			
+			listaProdutos.add(new Categoria.componentesHardware(nome, listaProdutos.size() + 1, categoria, custoCompra,
+					valorVenda, "Componentes de Hardware", paisOrigem, fabricante));
+
 			System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
 
 		} else if (categoria == 3) {
@@ -113,18 +114,14 @@ public class Loja {
 			System.out.print("Equipamento sem fio? ");
 			String semFio = entrada.nextLine();
 
-			listaProdutos.add(new Categoria.perifericosEAcessorios(nome, listaProdutos.size() + 1, categoria, custoCompra,valorVenda,
-					"Periféricos e Acessórios", tipo, semFio));
-			
+			listaProdutos.add(new Categoria.perifericosEAcessorios(nome, listaProdutos.size() + 1, categoria,
+					custoCompra, valorVenda, "Periféricos e Acessórios", tipo, semFio));
+
 			System.out.println(nome + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
-			
-			
-		}
-					
-			
 
 		}
-	
+
+	}
 
 	void adicionarEstoque() {
 		if (listaProdutos.isEmpty()) {
@@ -151,10 +148,10 @@ public class Loja {
 					saldoComercio -= custoTotal;
 					System.out.println("Estoque atualizado com sucesso!");
 				} else if (quantidade <= 0) {
-					System.out.println("Quantidade invalída");
+					System.out.println("Quantidade inválida!");
 
 				} else {
-					System.out.println("Saldo insuficiente no caixa da loja");
+					System.out.println("Saldo insuficiente no caixa da loja!");
 				}
 
 			}
@@ -181,7 +178,7 @@ public class Loja {
 			if (produto.getCodigo() == codigo) {
 				produtoEncontrado = true;
 				System.out.print("Deseja realmente remover o produto " + produto.getNome() + " (Cód.: "
-						+ produto.getCodigo() + ")? (1 - Sim, 2 - Não): ");
+						+ produto.getCodigo() + ")? \n1)Sim \n2)Não \nDigite: ");
 				int confirmacao = entrada.nextInt();
 				if (confirmacao == 1) {
 					saldoComercio += produto.getEstoque() * produto.getCustoCompra();
@@ -189,7 +186,7 @@ public class Loja {
 					System.out.println("Produto removido com sucesso!");
 					return;
 				} else {
-					System.out.println("Operação cancelada.");
+					System.out.println("Operação cancelada!");
 					return;
 				}
 			}
@@ -220,7 +217,7 @@ public class Loja {
 					double valorVenda = quantidadeVendida * produto.getValorVenda();
 					saldoComercio += valorVenda;
 
-					System.out.println("Venda realizada com sucesso! Estoque atualizado.");
+					System.out.println("Venda realizada com sucesso! Estoque atualizado!");
 					return;
 				} else {
 					System.out.println("Quantidade insuficiente em estoque!");
@@ -253,7 +250,7 @@ public class Loja {
 				listaProdutos.get(listaProdutos.size() - 1).setEstoque(estoque);
 			}
 		} catch (IOException e) {
-			System.out.println("Erro ao carregar os dados.");
+			System.out.println("Erro ao carregar os dados");
 		}
 	}
 
@@ -265,7 +262,7 @@ public class Loja {
 				bw.newLine();
 			}
 		} catch (IOException e) {
-			System.out.println("Erro ao salvar os dados.");
+			System.out.println("Erro ao salvar os dados");
 		}
 	}
 
@@ -273,7 +270,7 @@ public class Loja {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter("saldo.txt"))) {
 			bw.write(String.valueOf(saldoComercio));
 		} catch (IOException e) {
-			System.out.println("Erro ao salvar o saldo.");
+			System.out.println("Erro ao salvar o saldo");
 		}
 	}
 
@@ -282,7 +279,7 @@ public class Loja {
 			String linha = br.readLine();
 			saldoComercio = Double.parseDouble(linha);
 		} catch (IOException e) {
-			System.out.println("Erro ao carregar o saldo.");
+			System.out.println("Erro ao carregar o saldo");
 		}
 	}
 

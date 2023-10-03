@@ -1,9 +1,9 @@
-package comercio;
+package comercio2;
 
 public class Produto {
 	private String nome;
 	private int codigo;
-	private int categoria; 
+	private int categoria;
 	private double custoCompra;
 	private double valorVenda;
 	private int estoque;
@@ -14,7 +14,7 @@ public class Produto {
 		this.categoria = categoria;
 		this.custoCompra = custoCompra;
 		this.valorVenda = valorVenda;
-		this.estoque = 0; 
+		this.estoque = 0;
 	}
 
 	public String getNome() {
@@ -71,9 +71,9 @@ public class Produto {
 		} else if (categoria == 2) {
 			return "Componentes de Hardware";
 		} else if (categoria == 3) {
-			return "Periféricos e Acessórios";
+			return "PerifÃ©ricos e AcessÃ³rios";
 		} else {
-			return "Categoria não definida";
+			return "Categoria nÃ£o definida";
 		}
 	}
 
@@ -88,10 +88,10 @@ public class Produto {
 			System.out.println("Estoque insuficiente.");
 		}
 	}
-
-	public void exibirProduto() {
-		System.out.println(nome + " ( Cód.: " + codigo + " | Estoque: " + estoque + " | Categoria: " + categoria
-				+ " | Custo de Compra: " + custoCompra + " | Valor de Venda: " + valorVenda + " )");
-	}
-
+	
+       public String toString() {
+          
+		return nome + " (CÃ³digo: " + codigo + " | Estoque: " + estoque + " | Categoria: " + categoria +
+                    " | Custo de Compra: R$" + custoCompra + " | Valor de Venda: R$" + valorVenda;
+                    }
 }
