@@ -121,7 +121,7 @@ public class Loja {
 			
 		}
 					
-			//listaProdutos.add(new Produto(nome, codigo, categoria, custoCompra, valorVenda));
+			
 
 		}
 	
