@@ -41,13 +41,19 @@ public class Loja {
 			int categoriaEscolhida = entrada.nextInt();
 			entrada.nextLine();
 
+			boolean produtoEncontrado = false;
+
 			System.out.println("Produtos da categoria escolhida:");
 			for (Produto produto : listaProdutos) {
-				if (produto.getCategoria() == categoriaEscolhida) {
-					System.out.println(produto.toString());
 
+				if (produto.getCategoria() == categoriaEscolhida) {
+					produtoEncontrado = true;
+					System.out.println(produto.toString());
 				}
 
+			}
+			if (!produtoEncontrado) {
+				System.out.println("Não existem produtos cadastrados para essa categoria!");
 			}
 		}
 	}
@@ -207,8 +213,11 @@ public class Loja {
 		System.out.print("Digite o código do produto que deseja vender: ");
 		int codigo = entrada.nextInt();
 
+		boolean produtoEncontrado = false;
+
 		for (Produto produto : listaProdutos) {
 			if (produto.getCodigo() == codigo) {
+				produtoEncontrado = true;
 				System.out.print("Quantidade a ser vendida: ");
 				int quantidadeVendida = entrada.nextInt();
 
@@ -224,9 +233,12 @@ public class Loja {
 					return;
 				}
 			}
-			System.out.println("Código inválido!");
+
 		}
 
+		if (!produtoEncontrado) {
+			System.out.println("Código inválido!");
+		}
 	}
 
 	void gerarRelatorio() {

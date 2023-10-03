@@ -24,7 +24,7 @@ public class Main {
                 
                 System.out.println("1) Listar todos os produtos");
                 System.out.println("2) Listar produtos por categoria");
-                System.out.print("Escolha a opÃ§Ã£o:");
+                System.out.print("Escolha a opÃ§Ã£o: ");
 
                 int listarOpcao = entrada.nextInt();
 
