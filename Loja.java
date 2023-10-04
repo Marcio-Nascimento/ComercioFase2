@@ -1,4 +1,4 @@
-package comercio2;
+package comercio4;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -178,6 +178,7 @@ public class Loja {
 
 		System.out.print("Digite o código do produto que deseja adicionar estoque: ");
 		int codigo = entrada.nextInt();
+		entrada.nextLine();
 
 		boolean produtoEncontrado = false;
 
@@ -194,6 +195,7 @@ public class Loja {
 					saldoComercio -= custoTotal;
 					totalComprasSessaoAtual += custoTotal;
 					registrarCompra(custoTotal);
+					System.out.println("Estoque adicionado com sucesso!");
 
 				} else if (quantidade <= 0) {
 					System.out.println("Quantidade inválida!");
@@ -216,6 +218,7 @@ public class Loja {
 
 		System.out.print("Digite o código do produto que deseja remover: ");
 		int codigo = entrada.nextInt();
+		entrada.nextLine();
 
 		boolean produtoEncontrado = false;
 
@@ -225,7 +228,6 @@ public class Loja {
 				System.out.print("Deseja realmente remover o produto " + produto.getNome() + " (Cód.: "
 						+ produto.getCodigo() + ")? \n1)Sim \n2)Não \nDigite: ");
 				int confirmacao = entrada.nextInt();
-
 				entrada.nextLine();
 
 				if (confirmacao == 1) {
@@ -253,6 +255,7 @@ public class Loja {
 
 		System.out.print("Digite o código do produto que deseja vender: ");
 		int codigo = entrada.nextInt();
+		entrada.nextLine();
 
 		boolean produtoEncontrado = false;
 
@@ -417,8 +420,9 @@ public class Loja {
 					totalComprasSessaoAtual = Double.parseDouble(line.substring("TotalComprasSessaoAtual: ".length()));
 				} else if (line.startsWith("TotalVendasSessaoAtual: ")) {
 					totalVendasSessaoAtual = Double.parseDouble(line.substring("TotalVendasSessaoAtual: ".length()));
-				}else {System.out.println("O arquivo de saldo está vazio ou em um formato inválido.");
-					
+				} else {
+					System.out.println("O arquivo de saldo está vazio ou em um formato inválido.");
+
 				}
 			}
 		} catch (IOException e) {
