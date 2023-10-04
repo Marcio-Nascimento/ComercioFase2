@@ -8,15 +8,16 @@ public class Produto {
 	private double valorVenda;
 	private int estoque;
 
-	public Produto(String nome, int codigo, int categoria, int estoque,  double custoCompra, double valorVenda) {
+	public Produto(String nome, int codigo, int categoria, int estoque, double custoCompra, double valorVenda) {
 		this.nome = nome;
 		this.codigo = codigo;
 		this.categoria = categoria;
 		this.estoque = estoque;
 		this.custoCompra = custoCompra;
 		this.valorVenda = valorVenda;
-		
+
 	}
+
 
 	public String getNome() {
 		return nome;
@@ -89,14 +90,14 @@ public class Produto {
 			System.out.println("Estoque insuficiente.");
 		}
 	}
-	
-       public String toString() {
-		return nome + " (Código: " + codigo + " | Estoque: " + estoque + " | Categoria: " + categoria +
-                    " | Custo de Compra: R$" + custoCompra + " | Valor de Venda: R$" + valorVenda;
-                    }
-       
-       public String toStringCategoria() {
-    	   return  nome + " (Código: " + codigo + " | Estoque: " + estoque;
-    	   
-       }
+
+	public String toString() {
+		return nome + " (Código: " + codigo + " | Estoque: " + estoque + " | Categoria: " + categoria
+				+ " | Custo de Compra: R$" + custoCompra + " | Valor de Venda: R$" + valorVenda;
+	}
+
+	public String toStringCategoria() {
+		return nome + " (Código: " + codigo + " | Estoque: " + estoque;
+
+	}
 }

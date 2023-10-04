@@ -1,28 +1,28 @@
 package comercio2;
 
 public class Categoria extends Produto {
-	public static String nomeCategoria;
-	public static String primeiroAtributo;
-	public static String segundoAtributo;
+    private String nomeCategoria;
+    private String primeiroAtributo;
+    private String segundoAtributo;
 
-	public Categoria(String nome, int codigo, int categoria, int estoque, double custoCompra, double valorVenda,
-			String nomeCategoria, String primeiroAtributo, String segundoAtributo) {
-		super(nome, codigo, categoria, estoque, custoCompra, valorVenda);
-		Categoria.nomeCategoria = nomeCategoria;
-		Categoria.primeiroAtributo = primeiroAtributo;
-		Categoria.segundoAtributo = segundoAtributo;
+    public Categoria(String nome, int codigo, int categoria, int estoque, double custoCompra, double valorVenda,
+                     String nomeCategoria, String primeiroAtributo, String segundoAtributo) {
+        super(nome, codigo, categoria, estoque, custoCompra, valorVenda);
+        this.nomeCategoria = nomeCategoria;
+        this.primeiroAtributo = primeiroAtributo;
+        this.segundoAtributo = segundoAtributo;
+    }
 
-	}
 
-	public static String getSegundoAtributo() {
+	public String getSegundoAtributo() {
 		return segundoAtributo;
 	}
-	
-	public static String getPrimeiroAtributo() {
+
+	public String getPrimeiroAtributo() {
 		return primeiroAtributo;
 	}
 
-	public static String getNomeCategoria() {
+	public String getNomeCategoria() {
 		return nomeCategoria;
 	}
 
@@ -38,12 +38,13 @@ public class Categoria extends Produto {
 		private String quantidadeRam;
 
 		public computadorELaptop(String nome, int codigo, int categoria, int estoque, double custoCompra,
-				double valorVenda, String nomeCategoria, String primeiroAtributo, String segundoAtributo) {
-			super(nome, codigo, categoria, estoque, custoCompra, valorVenda, "Computador e Laptop", primeiroAtributo,
-					segundoAtributo);
-			this.sistemaOperacional = primeiroAtributo;
-			this.quantidadeRam = segundoAtributo;
+		        double valorVenda, String nomeCategoria, String sistemaOperacional, String quantidadeRam) {
+		    super(nome, codigo, categoria, estoque, custoCompra, valorVenda, nomeCategoria, sistemaOperacional, quantidadeRam);
+		    this.sistemaOperacional = sistemaOperacional;
+		    this.quantidadeRam = quantidadeRam;
 		}
+
+
 
 		public String getSistemaOperacional() {
 			return sistemaOperacional;
@@ -64,8 +65,9 @@ public class Categoria extends Produto {
 		@Override
 		public String toStringCategoria() {
 			String printar = super.toStringCategoria() + String.format(
-					" | Sistema operacional: %s| Quantidade RAM: %d | Custo de Compra: R$%.2f | Valor de Venda: R$%.2f",
-					sistemaOperacional, quantidadeRam, getCustoCompra(), getValorVenda());
+					" | Sistema operacional: %s | Quantidade RAM: %s | Custo de Compra: R$%.2f | Valor de Venda: R$%.2f | Nome categoria: %s",
+					sistemaOperacional, quantidadeRam, getCustoCompra(), getValorVenda(), getNomeCategoria());
+
 			return printar;
 		}
 	}
@@ -75,12 +77,12 @@ public class Categoria extends Produto {
 		private String fabricante;
 
 		public componentesHardware(String nome, int codigo, int categoria, int estoque, double custoCompra,
-				double valorVenda, String nomeCategoria, String primeiroAtributo, String segundoAtributo) {
-			super(nome, codigo, categoria, estoque, custoCompra, valorVenda, "Componentes de hardware",
-					primeiroAtributo, segundoAtributo);
-			this.paisOrigem = primeiroAtributo;
-			this.fabricante = segundoAtributo;
+		        double valorVenda, String nomeCategoria, String paisOrigem, String fabricante) {
+		    super(nome, codigo, categoria, estoque, custoCompra, valorVenda, nomeCategoria, paisOrigem, fabricante);
+		    this.paisOrigem = paisOrigem;
+		    this.fabricante = fabricante;
 		}
+
 
 		public String getPaisOrigem() {
 			return paisOrigem;
@@ -101,8 +103,8 @@ public class Categoria extends Produto {
 		@Override
 		public String toStringCategoria() {
 			String printar = super.toStringCategoria() + String.format(
-					" | Pais origem: %s| Fabricante: %d | Custo de Compra: R$%.2f | Valor de Venda: R$%.2f", paisOrigem,
-					fabricante, getCustoCompra(), getValorVenda());
+					" | Pais origem: %s| Fabricante: %s | Custo de Compra: R$%.2f | Valor de Venda: R$%.2f | Nome categoria: %s",
+					paisOrigem, fabricante, getCustoCompra(), getValorVenda(), getNomeCategoria());
 			return printar;
 		}
 	}
@@ -112,13 +114,13 @@ public class Categoria extends Produto {
 		private String semFio;
 
 		public perifericosEAcessorios(String nome, int codigo, int categoria, int estoque, double custoCompra,
-				double valorVenda, String nomeCategoria, String primeiroAtributo, String segundoAtributo) {
-			super(nome, codigo, categoria, estoque, custoCompra, valorVenda, "Periféricos e Acessórios",
-					primeiroAtributo, segundoAtributo);
-			this.tipo = primeiroAtributo;
-			this.semFio = segundoAtributo;
-
+		        double valorVenda, String nomeCategoria, String tipo, String semFio) {
+		    super(nome, codigo, categoria, estoque, custoCompra, valorVenda, nomeCategoria, tipo, semFio);
+		    this.tipo = tipo;
+		    this.semFio = semFio;
 		}
+
+
 
 		public String getTipo() {
 			return tipo;
@@ -145,5 +147,6 @@ public class Categoria extends Produto {
 		}
 
 	}
+
 
 }

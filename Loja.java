@@ -2,22 +2,24 @@ package comercio2;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Loja {
+	private double totalComprasSessaoAtual = 0.0;
+	private double totalVendasSessaoAtual = 0.0;
+
+	private double totalComprasHistorico = 0.0;
+	private double totalVendasHistorico = 0.0;
+
 	private ArrayList<Produto> listaProdutos = new ArrayList<>();
 	private double saldoComercio = 1000.0;
-	
+
 	static Scanner entrada = new Scanner(System.in);
 
 	void listarProdutos() {
@@ -35,7 +37,6 @@ public class Loja {
 		if (listaProdutos.isEmpty()) {
 			System.out.println("Não existem produtos cadastrados!");
 		} else {
-
 			System.out.println("\n1. Computadores e Laptops");
 			System.out.println("2. Componentes de Hardware");
 			System.out.println("3. Periféricos e Acessórios");
@@ -47,16 +48,25 @@ public class Loja {
 			boolean produtoEncontrado = false;
 
 			System.out.println("Produtos da categoria escolhida:");
+
 			for (Produto produto : listaProdutos) {
-
-				if (produto.getCategoria() == categoriaEscolhida) {
-					produtoEncontrado = true;
-					System.out.println(produto.toStringCategoria());
+				if (produto instanceof Categoria) {
+					Categoria categoria = (Categoria) produto;
+					if (categoria.getCategoria() == categoriaEscolhida) {
+						produtoEncontrado = true;
+						System.out.print(produto.getNome() + " (Código: " + produto.getCodigo() + " | Estoque: "
+								+ produto.getEstoque());
+						System.out.print(" | Nome Categoria: " + categoria.getNomeCategoria());
+						System.out.print(" | Primeiro Atributo: " + categoria.getPrimeiroAtributo());
+						System.out.print(" | Segundo Atributo: " + categoria.getSegundoAtributo());
+						System.out.print(" | Custo de Compra: R$" + produto.getCustoCompra());
+						System.out.println(" | Valor de Venda: R$" + produto.getValorVenda());
+					}
 				}
-
 			}
+
 			if (!produtoEncontrado) {
-				System.out.println("Não existem produtos cadastrados para essa categoria!");
+				System.out.println("Nenhum produto encontrado para a categoria escolhida.");
 			}
 		}
 	}
@@ -124,11 +134,11 @@ public class Loja {
 
 			System.out.print("Digite a quantidade de RAM do dispositivo: ");
 			String quantidadeRam = entrada.nextLine();
-			
+
 			listaProdutos.add(new Categoria.computadorELaptop(nome, listaProdutos.size() + 1, categoria, estoque,
 					custoCompra, valorVenda, "Computadores e Laptops", sistemaOperacional, quantidadeRam));
 
-			System.out.printf("<%s> cadastrado com sucesso! | Código: <%d> | Estoque: <%d>", nome, codigo, estoque);
+			System.out.printf("%s cadastrado com sucesso! | Código: %d | Estoque: %d", nome, codigo, estoque);
 
 		} else if (categoria == 2) {
 			System.out.print("Descreva o país de origem do componente: ");
@@ -182,17 +192,15 @@ public class Loja {
 				if (quantidade > 0 && custoTotal <= saldoComercio) {
 					produto.adicionarEstoque(quantidade);
 					saldoComercio -= custoTotal;
-					historicoTransacoes.add(new Transacao(custoTotal, "compra"));
-					escreverHistoricoTransacoesNoArquivo();
+					totalComprasSessaoAtual += custoTotal;
+					registrarCompra(custoTotal);
+
 				} else if (quantidade <= 0) {
 					System.out.println("Quantidade inválida!");
-
 				} else {
 					System.out.println("Saldo insuficiente no caixa da loja!");
 				}
-
 			}
-
 		}
 		if (!produtoEncontrado)
 			System.out.println("Código inválido!");
@@ -217,6 +225,9 @@ public class Loja {
 				System.out.print("Deseja realmente remover o produto " + produto.getNome() + " (Cód.: "
 						+ produto.getCodigo() + ")? \n1)Sim \n2)Não \nDigite: ");
 				int confirmacao = entrada.nextInt();
+
+				entrada.nextLine();
+
 				if (confirmacao == 1) {
 					saldoComercio += produto.getEstoque() * produto.getCustoCompra();
 					listaProdutos.remove(produto);
@@ -233,7 +244,6 @@ public class Loja {
 	}
 
 	void venderProduto() {
-
 		if (listaProdutos.isEmpty()) {
 			System.out.println("Não existem produtos cadastrados para vender!");
 			return;
@@ -257,9 +267,8 @@ public class Loja {
 					produto.vender(quantidadeVendida);
 					double valorVenda = quantidadeVendida * produto.getValorVenda();
 					saldoComercio += valorVenda;
-
-					historicoTransacoes.add(new Transacao(valorVenda, "venda"));
-					escreverHistoricoTransacoesNoArquivo();
+					totalVendasSessaoAtual += valorVenda;
+					registrarVenda(valorVenda);
 
 					System.out.println("Venda realizada com sucesso! Estoque atualizado!");
 					return;
@@ -268,7 +277,6 @@ public class Loja {
 					return;
 				}
 			}
-
 		}
 
 		if (!produtoEncontrado) {
@@ -276,48 +284,69 @@ public class Loja {
 		}
 	}
 
-	void gerarRelatorio() {
-		System.out.println("\nRelatório:");
-		System.out.println("Saldo em caixa: R$" + saldoComercio);
-
-	}
-
-	void carregarDados() {
+	public void carregarDados() {
 		try (BufferedReader br = new BufferedReader(new FileReader("Loja.txt"))) {
 			String linha;
+			listaProdutos.clear();
+
 			while ((linha = br.readLine()) != null) {
-				String[] partes = linha.split(",");
-				String nome = partes[0];
-				int codigo = Integer.parseInt(partes[1]);
-				int categoria = Integer.parseInt(partes[2]);
-				double custoCompra = Double.parseDouble(partes[3]);
-				double valorVenda = Double.parseDouble(partes[4]);
-				int estoque = Integer.parseInt(partes[5]);
-				String nomeCategoria = partes[6];
-				String primeiroAtributo = partes[7];
-				String segundoAtributo = partes[8];
-				listaProdutos.add(new Categoria(nome, codigo, categoria, estoque, custoCompra, valorVenda, nomeCategoria, primeiroAtributo, segundoAtributo));
-				listaProdutos.get(listaProdutos.size() - 1).setEstoque(estoque);
+				String[] dados = linha.split(",");
+
+				if (dados.length >= 6) {
+					int codigo = Integer.parseInt(dados[1]);
+					int categoria = Integer.parseInt(dados[2]);
+					int estoque = Integer.parseInt(dados[5]);
+					double custoCompra = Double.parseDouble(dados[3]);
+					double valorVenda = Double.parseDouble(dados[4]);
+
+					if (categoria == 1) {
+
+						String sistemaOperacional = dados[6];
+						String quantidadeRAM = dados[7];
+						Categoria categoriaProduto = new Categoria(dados[0], codigo, categoria, estoque, custoCompra,
+								valorVenda, "Computadores e Laptops", sistemaOperacional, quantidadeRAM);
+						listaProdutos.add(categoriaProduto);
+					} else if (categoria == 2) {
+
+						String primeiroAtributo = dados[6];
+						String segundoAtributo = dados[7];
+						Categoria categoriaProduto = new Categoria(dados[0], codigo, categoria, estoque, custoCompra,
+								valorVenda, "Componentes de Hardware", primeiroAtributo, segundoAtributo);
+						listaProdutos.add(categoriaProduto);
+					} else if (categoria == 3) {
+
+						String primeiroAtributo = dados[6];
+						String segundoAtributo = dados[7];
+						Categoria categoriaProduto = new Categoria(dados[0], codigo, categoria, estoque, custoCompra,
+								valorVenda, "Periféricos e Acessórios", primeiroAtributo, segundoAtributo);
+						listaProdutos.add(categoriaProduto);
+					}
+				}
 			}
 		} catch (IOException e) {
 			System.out.println("Erro ao carregar os dados");
 		}
 	}
 
-	void salvarDados() {
-	    try (BufferedWriter bw = new BufferedWriter(new FileWriter("Loja.txt"))) {
-	        for (Produto produto : listaProdutos) {
-	            bw.write(produto.getNome() + "," + produto.getCodigo() + "," + produto.getCategoria() + ","
-	                    + produto.getCustoCompra() + "," + produto.getValorVenda() + "," + produto.getEstoque() + ","
-	                    + Categoria.nomeCategoria + "," + Categoria.primeiroAtributo + ","
-	                    + Categoria.segundoAtributo);
-	            bw.newLine();
-	        }
-	    } catch (IOException e) {
-	        System.out.println("Erro ao salvar os dados");
-	    }
+	public void salvarDados() {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter("Loja.txt"))) {
+			for (Produto produto : listaProdutos) {
+				if (produto instanceof Categoria) {
+					Categoria categoria = (Categoria) produto;
+					bw.write(categoria.getNome() + "," + categoria.getCodigo() + "," + categoria.getCategoria() + ","
+							+ categoria.getCustoCompra() + "," + categoria.getValorVenda() + ","
+							+ categoria.getEstoque() + "," + categoria.getNomeCategoria() + ","
+							+ categoria.getPrimeiroAtributo() + "," + categoria.getSegundoAtributo());
+				} else {
+					bw.write(produto.getNome() + "," + produto.getCodigo() + "," + produto.getCategoria() + ","
+							+ produto.getCustoCompra() + "," + produto.getValorVenda() + "," + produto.getEstoque());
+				}
+				bw.newLine();
+			}
+		} catch (IOException e) {
+			System.out.println("Erro ao salvar os dados");
+		}
 	}
-
 
 	public void salvarSaldo() {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter("saldo.txt"))) {
@@ -328,108 +357,81 @@ public class Loja {
 	}
 
 	public void carregarSaldo() {
-		try (BufferedReader br = new BufferedReader(new FileReader("saldo.txt"))) {
-			String linha = br.readLine();
-			saldoComercio = Double.parseDouble(linha);
-		} catch (IOException e) {
-			System.out.println("Erro ao carregar o saldo");
+		File arquivoSaldo = new File("saldo.txt");
+
+		if (arquivoSaldo.exists() && arquivoSaldo.isFile()) {
+			try (BufferedReader br = new BufferedReader(new FileReader(arquivoSaldo))) {
+				String linha = br.readLine();
+
+				if (linha != null && !linha.trim().isEmpty()) {
+					saldoComercio = Double.parseDouble(linha);
+					System.out.println("Saldo carregado com sucesso: R$" + saldoComercio);
+				} else {
+					System.out.println("O arquivo de saldo está vazio ou em um formato inválido.");
+				}
+			} catch (IOException e) {
+				System.out.println("Erro ao carregar o saldo: " + e.getMessage());
+			} catch (NumberFormatException e) {
+				System.out.println("Formato inválido no arquivo de saldo.");
+			}
+		} else {
+			System.out.println("O arquivo de saldo não existe.");
 		}
 	}
 
-	void relatorioSessaoAtual() {
-		System.out.println("Relatório da sessão atual: ");
-
-		double totalComprasSessaoAtual = 0.0;
-		double totalVendasSessaoAtual = 0.0;
-
-		for (Transacao transacao : historicoTransacoes) {
-			if (transacao.getTipo().equals("compra")) {
-				totalComprasSessaoAtual += transacao.getValor();
-			} else if (transacao.getTipo().equals("venda")) {
-				totalVendasSessaoAtual += transacao.getValor();
-			}
-		}
-
-		double saldoArrecadadoSessao = totalVendasSessaoAtual - totalComprasSessaoAtual;
-		System.out.println("Total Compras na Sessão Atual: R$" + (-totalComprasSessaoAtual));
+	void gerarRelatorioSessaoAtual() {
+		System.out.println("Relatório da Sessão Atual:");
+		System.out.println("Total Compras na Sessão Atual: R$" + totalComprasSessaoAtual);
 		System.out.println("Total Vendas na Sessão Atual: R$" + totalVendasSessaoAtual);
-		System.out.println("Saldo Arrecadado na Sessão Atual: R$" + saldoArrecadadoSessao);
+		System.out.println("Saldo Arrecadado na Sessão Atual: R$" + (totalVendasSessaoAtual - totalComprasSessaoAtual));
 	}
 
-	void relatorioHistoricoCompleto() {
-		System.out.println("Relatório geral: ");
+	void gerarRelatorioGeral() {
+		System.out.println("Relatório Geral:");
+		System.out
+				.println("Total Compras no Histórico Completo: R$" + (totalComprasHistorico + totalComprasSessaoAtual));
+		System.out.println("Total Vendas no Histórico Completo: R$" + (totalVendasHistorico + totalVendasSessaoAtual));
+		System.out
+				.println("Saldo Arrecadado no Histórico Completo: R$" + ((totalVendasHistorico + totalVendasSessaoAtual)
+						- (totalComprasHistorico + totalComprasSessaoAtual)));
+	}
 
-		double totalComprasHistoricoCompleto = 0.0;
-		double totalVendasHistoricoCompleto = 0.0;
+	public void salvarDadosRelatorio() {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter("Caixa_loja.txt"))) {
 
-		for (Transacao transacao : historicoTransacoes) {
-			if (transacao.getTipo().equals("compra")) {
-				totalComprasHistoricoCompleto += transacao.getValor();
-			} else if (transacao.getTipo().equals("venda")) {
-				totalVendasHistoricoCompleto += transacao.getValor();
+			bw.write("TotalComprasSessaoAtual: " + totalComprasSessaoAtual);
+			bw.newLine();
+			bw.write("TotalVendasSessaoAtual: " + totalVendasSessaoAtual);
+			bw.newLine();
+
+		} catch (IOException e) {
+			System.out.println("Erro ao salvar os dados");
+		}
+	}
+
+	public void carregarDadosRelatorio() {
+		try (BufferedReader br = new BufferedReader(new FileReader("Caixa_loja.txt"))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				if (line.startsWith("TotalComprasSessaoAtual: ")) {
+					totalComprasSessaoAtual = Double.parseDouble(line.substring("TotalComprasSessaoAtual: ".length()));
+				} else if (line.startsWith("TotalVendasSessaoAtual: ")) {
+					totalVendasSessaoAtual = Double.parseDouble(line.substring("TotalVendasSessaoAtual: ".length()));
+				}else {System.out.println("O arquivo de saldo está vazio ou em um formato inválido.");
+					
+				}
 			}
+		} catch (IOException e) {
+			System.out.println("Erro ao carregar os dados");
 		}
-
-		double saldoArrecadadoHistoricoCompleto = totalVendasHistoricoCompleto - totalComprasHistoricoCompleto;
-
-		System.out.println("Total Compras no Histórico Completo: R$" + totalComprasHistoricoCompleto);
-		System.out.println("Total Vendas no Histórico Completo: R$" + totalVendasHistoricoCompleto);
-		System.out.println("Saldo Arrecadado no Histórico Completo: R$" + saldoArrecadadoHistoricoCompleto);
 	}
 
-	public void iniciarSessao() {
-		historicoTransacoes.clear();
-
-	}
-	@SuppressWarnings("unchecked")
-	public static ArrayList<Transacao> lerHistoricoTransacoesDoArquivo() {
-	    ArrayList<Transacao> historico = new ArrayList<>();
-
-	    try {
-	        FileInputStream fileInputStream = new FileInputStream("historico.txt");
-	        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-
-	        historico = (ArrayList<Transacao>) objectInputStream.readObject();
-
-	        objectInputStream.close();
-	    } catch (FileNotFoundException e) {
-	        System.out.println("Arquivo 'historico.txt' não encontrado.");
-	    } catch (IOException e) {
-	        System.out.println("Erro ao ler o arquivo 'historico.txt'.");
-	    } catch (ClassNotFoundException e) {
-	        System.out.println("Classe não encontrada ao ler o arquivo 'historico.txt'.");
-	    }
-
-	    return historico;
-	}
-	void escreverHistoricoTransacoesNoArquivo() {
-	    try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("historico.txt"))) {
-	        objectOutputStream.writeObject(historicoTransacoes);
-	    } catch (IOException e) {
-	        System.out.println("Erro ao escrever o arquivo 'historico.txt'.");
-	    }
+	private void registrarCompra(double valor) {
+		totalComprasSessaoAtual += valor;
 	}
 
-
-	class Transacao {
-		private double valor;
-		private String tipo;
-
-		public Transacao(double valor, String tipo) {
-			this.valor = valor;
-			this.tipo = tipo;
-		}
-
-		public double getValor() {
-			return valor;
-		}
-
-		public String getTipo() {
-			return tipo;
-		}
-
+	private void registrarVenda(double valor) {
+		totalVendasSessaoAtual += valor;
 	}
-
-	ArrayList<Loja.Transacao> historicoTransacoes = (ArrayList<Loja.Transacao>) lerHistoricoTransacoesDoArquivo();
 
 }
