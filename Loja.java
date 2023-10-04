@@ -1,4 +1,4 @@
-package comercio4;
+package comercio2;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,6 +11,11 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Loja {
+	
+	public Loja() {
+		 carregarDadosRelatorio();
+	}
+
 	private double totalComprasSessaoAtual = 0.0;
 	private double totalVendasSessaoAtual = 0.0;
 
@@ -138,7 +143,8 @@ public class Loja {
 			listaProdutos.add(new Categoria.computadorELaptop(nome, listaProdutos.size() + 1, categoria, estoque,
 					custoCompra, valorVenda, "Computadores e Laptops", sistemaOperacional, quantidadeRam));
 
-			System.out.printf("%s cadastrado com sucesso! | Código: %d | Estoque: %d", nome, codigo, estoque);
+			System.out.printf("< %s > cadastrado com sucesso! | Código: < %d > | Estoque: < %d >", nome, codigo,
+					estoque);
 
 		} else if (categoria == 2) {
 			System.out.print("Descreva o país de origem do componente: ");
@@ -150,7 +156,8 @@ public class Loja {
 			listaProdutos.add(new Categoria.componentesHardware(nome, listaProdutos.size() + 1, categoria, estoque,
 					custoCompra, valorVenda, "Componentes de Hardware", paisOrigem, fabricante));
 
-			System.out.printf("<%s> cadastrado com sucesso! | Código: <%d> | Estoque: <%d>", nome, codigo, estoque);
+			System.out.printf("< %s > cadastrado com sucesso! | Código: < %d > | Estoque: < %d >", nome, codigo,
+					estoque);
 
 		} else if (categoria == 3) {
 			System.out.print("Descreva o tipo do equipamento: ");
@@ -162,7 +169,8 @@ public class Loja {
 			listaProdutos.add(new Categoria.perifericosEAcessorios(nome, listaProdutos.size() + 1, categoria, estoque,
 					custoCompra, valorVenda, "Periféricos e Acessórios", tipo, semFio));
 
-			System.out.printf("<%s> cadastrado com sucesso! | Código: <%d> | Estoque: <%d>", nome, codigo, estoque);
+			System.out.printf("< %s > cadastrado com sucesso! | Código: < %d > | Estoque: < %d >", nome, codigo,
+					estoque);
 
 		}
 
@@ -196,7 +204,7 @@ public class Loja {
 					totalComprasSessaoAtual += custoTotal;
 					registrarCompra(custoTotal);
 					System.out.println("Estoque adicionado com sucesso!");
-
+					gerarRelatorioSessaoAtual();
 				} else if (quantidade <= 0) {
 					System.out.println("Quantidade inválida!");
 				} else {
@@ -285,6 +293,7 @@ public class Loja {
 		if (!produtoEncontrado) {
 			System.out.println("Código inválido!");
 		}
+		gerarRelatorioSessaoAtual();
 	}
 
 	public void carregarDados() {
@@ -382,60 +391,89 @@ public class Loja {
 		}
 	}
 
-	void gerarRelatorioSessaoAtual() {
-		System.out.println("Relatório da Sessão Atual:");
-		System.out.println("Total Compras na Sessão Atual: R$" + totalComprasSessaoAtual);
-		System.out.println("Total Vendas na Sessão Atual: R$" + totalVendasSessaoAtual);
-		System.out.println("Saldo Arrecadado na Sessão Atual: R$" + (totalVendasSessaoAtual - totalComprasSessaoAtual));
-	}
+	 void gerarRelatorioSessaoAtual() {
+	        double totalComprasSessaoAtualTemp = 0.0;
+	        double totalVendasSessaoAtualTemp = 0.0;
 
-	void gerarRelatorioGeral() {
-		System.out.println("Relatório Geral:");
-		System.out
-				.println("Total Compras no Histórico Completo: R$" + (totalComprasHistorico + totalComprasSessaoAtual));
-		System.out.println("Total Vendas no Histórico Completo: R$" + (totalVendasHistorico + totalVendasSessaoAtual));
-		System.out
-				.println("Saldo Arrecadado no Histórico Completo: R$" + ((totalVendasHistorico + totalVendasSessaoAtual)
-						- (totalComprasHistorico + totalComprasSessaoAtual)));
-	}
+	        for (Produto produto : listaProdutos) {
+	            if (produto.getCategoria() == 1) {
+	                totalComprasSessaoAtualTemp += (produto.getCustoCompra() * produto.getQuantidadeVendida());
+	                totalVendasSessaoAtualTemp += (produto.getValorVenda() * produto.getQuantidadeVendida());
+	            }
+	        }
 
-	public void salvarDadosRelatorio() {
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter("Caixa_loja.txt"))) {
+	        System.out.println("Relatório da Sessão Atual:");
+	        System.out.println("Total Compras na Sessão Atual: R$" + totalComprasSessaoAtualTemp);
+	        System.out.println("Total Vendas na Sessão Atual: R$" + totalVendasSessaoAtualTemp);
+	        System.out.println("Saldo Arrecadado na Sessão Atual: R$" + (totalVendasSessaoAtualTemp - totalComprasSessaoAtualTemp));
 
-			bw.write("TotalComprasSessaoAtual: " + totalComprasSessaoAtual);
-			bw.newLine();
-			bw.write("TotalVendasSessaoAtual: " + totalVendasSessaoAtual);
-			bw.newLine();
+	        totalComprasHistorico += totalComprasSessaoAtual;
+	        totalVendasHistorico += totalVendasSessaoAtual;
+	        salvarDadosRelatorio();
+	    }
 
-		} catch (IOException e) {
-			System.out.println("Erro ao salvar os dados");
+
+	 void gerarRelatorioGeral() {
+		    double totalComprasHistoricoCompleto = totalComprasHistorico + totalComprasSessaoAtual;
+		    double totalVendasHistoricoCompleto = totalVendasHistorico + totalVendasSessaoAtual;
+
+		    System.out.println("Relatório Geral:");
+		    System.out.println("Total Compras no Histórico Completo: R$" + totalComprasHistoricoCompleto);
+		    System.out.println("Total Vendas no Histórico Completo: R$" + totalVendasHistoricoCompleto);
+		    System.out.println("Saldo Arrecadado no Histórico Completo: R$" + (totalVendasHistoricoCompleto - totalComprasHistoricoCompleto));
+		    salvarDadosRelatorio();
 		}
-	}
 
-	public void carregarDadosRelatorio() {
-		try (BufferedReader br = new BufferedReader(new FileReader("Caixa_loja.txt"))) {
-			String line;
-			while ((line = br.readLine()) != null) {
-				if (line.startsWith("TotalComprasSessaoAtual: ")) {
-					totalComprasSessaoAtual = Double.parseDouble(line.substring("TotalComprasSessaoAtual: ".length()));
-				} else if (line.startsWith("TotalVendasSessaoAtual: ")) {
-					totalVendasSessaoAtual = Double.parseDouble(line.substring("TotalVendasSessaoAtual: ".length()));
-				} else {
-					System.out.println("O arquivo de saldo está vazio ou em um formato inválido.");
 
-				}
-			}
-		} catch (IOException e) {
-			System.out.println("Erro ao carregar os dados");
-		}
-	}
+	    public void salvarDadosRelatorio() {
+	        try (BufferedWriter bw = new BufferedWriter(new FileWriter("Relatorio.txt"))) {
+	            bw.write("TotalComprasSessaoAtual: " + totalComprasSessaoAtual);
+	            bw.newLine();
+	            bw.write("TotalVendasSessaoAtual: " + totalVendasSessaoAtual);
+	            bw.newLine();
+	            bw.write("TotalComprasHistorico: " + totalComprasHistorico);
+	            bw.newLine();
+	            bw.write("TotalVendasHistorico: " + totalVendasHistorico);
+	        } catch (IOException e) {
+	            System.out.println("Erro ao salvar os dados do relatório");
+	        }
+	    }
+
+
+	    public void carregarDadosRelatorio() {
+	        File arquivoRelatorio = new File("Relatorio.txt");
+
+	        if (arquivoRelatorio.exists() && arquivoRelatorio.isFile()) {
+	            try (BufferedReader br = new BufferedReader(new FileReader(arquivoRelatorio))) {
+	                String line;
+	                while ((line = br.readLine()) != null) {
+	                    if (line.startsWith("TotalComprasSessaoAtual: ")) {
+	                        totalComprasSessaoAtual = Double.parseDouble(line.substring("TotalComprasSessaoAtual: ".length()));
+	                    } else if (line.startsWith("TotalVendasSessaoAtual: ")) {
+	                        totalVendasSessaoAtual = Double.parseDouble(line.substring("TotalVendasSessaoAtual: ".length()));
+	                    } else if (line.startsWith("TotalComprasHistorico: ")) {
+	                        totalComprasHistorico = Double.parseDouble(line.substring("TotalComprasHistorico: ".length()));
+	                    } else if (line.startsWith("TotalVendasHistorico: ")) {
+	                        totalVendasHistorico = Double.parseDouble(line.substring("TotalVendasHistorico: ".length()));
+	                    }
+	                }
+	            } catch (IOException e) {
+	                System.out.println("Erro ao carregar os dados do relatório");
+	            } catch (NumberFormatException e) {
+	                System.out.println("Formato inválido nos dados do relatório");
+	            }
+	        }
+	    }
+	
 
 	private void registrarCompra(double valor) {
-		totalComprasSessaoAtual += valor;
+        totalComprasSessaoAtual += valor;
+        totalComprasHistorico += valor;
 	}
 
 	private void registrarVenda(double valor) {
-		totalVendasSessaoAtual += valor;
-	}
+        totalVendasSessaoAtual += valor;
+        totalVendasHistorico += valor;
+    }
 
 }

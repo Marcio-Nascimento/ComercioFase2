@@ -1,6 +1,7 @@
 package comercio2;
 
 public class Produto {
+	private int quantidadeVendida;
 	private String nome;
 	private int codigo;
 	private int categoria;
@@ -15,7 +16,17 @@ public class Produto {
 		this.estoque = estoque;
 		this.custoCompra = custoCompra;
 		this.valorVenda = valorVenda;
+		this.quantidadeVendida = 0;
+	}
 
+
+	public int getQuantidadeVendida() {
+		return quantidadeVendida;
+	}
+
+
+	public void setQuantidadeVendida(int quantidadeVendida) {
+		this.quantidadeVendida = quantidadeVendida;
 	}
 
 
@@ -84,12 +95,13 @@ public class Produto {
 	}
 
 	public void vender(int quantidade) {
-		if (quantidade <= estoque) {
-			estoque -= quantidade;
-		} else {
-			System.out.println("Estoque insuficiente.");
-		}
-	}
+        if (quantidade <= estoque) {
+            estoque -= quantidade;
+            quantidadeVendida += quantidade; 
+        } else {
+            System.out.println("Quantidade insuficiente em estoque!");
+        }
+    }
 
 	public String toString() {
 		return nome + " (Código: " + codigo + " | Estoque: " + estoque + " | Categoria: " + categoria
