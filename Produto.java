@@ -72,9 +72,9 @@ public class Produto {
 		} else if (categoria == 2) {
 			return "Componentes de Hardware";
 		} else if (categoria == 3) {
-			return "PerifÃ©ricos e AcessÃ³rios";
+			return "Periféricos e Acessórios";
 		} else {
-			return "Categoria nÃ£o definida";
+			return "Categoria não definida";
 		}
 	}
 
@@ -91,7 +91,7 @@ public class Produto {
 	}
 	
        public String toString() {
-		return nome + " (CÃ³digo: " + codigo + " | Estoque: " + estoque + " | Categoria: " + categoria +
+		return nome + " (Código: " + codigo + " | Estoque: " + estoque + " | Categoria: " + categoria +
                     " | Custo de Compra: R$" + custoCompra + " | Valor de Venda: R$" + valorVenda;
                     }
        

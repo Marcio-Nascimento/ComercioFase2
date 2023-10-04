@@ -7,10 +7,11 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         criarArquivo();
-
+        
         Loja loja = new Loja();
         loja.carregarDados();
         loja.carregarSaldo();
+       // loja.iniciarSessao();
         Scanner entrada = new Scanner(System.in);
 
         int opcao = 1;
@@ -24,7 +25,7 @@ public class Main {
                 
                 System.out.println("1) Listar todos os produtos");
                 System.out.println("2) Listar produtos por categoria");
-                System.out.print("Escolha a opÃ§Ã£o: ");
+                System.out.print("Escolha a opção: ");
 
                 int listarOpcao = entrada.nextInt();
 
@@ -33,7 +34,7 @@ public class Main {
                 } else if (listarOpcao == 2) {
                     loja.listarProdutosPorCategoria();
                 } else {
-                    System.out.println("OpÃ§Ã£o invÃ¡lida.");
+                    System.out.println("Opção invalída.");
                 }
             } else if (opcao == 2) {
                 loja.cadastrarProduto();
@@ -44,14 +45,14 @@ public class Main {
             } else if (opcao == 5) {
                 loja.venderProduto();
             } else if (opcao == 6) {
-                loja.relatorioSessaoAtual();
-                loja.relatorioHistoricoCompleto();
+              loja.relatorioSessaoAtual();
+              loja.relatorioHistoricoCompleto();
             } else if (opcao == 7) {
                 loja.salvarDados();
                 loja.salvarSaldo();
                 System.out.println("Obrigado por usar nosso sistema!");
             } else {
-                System.out.println("OpÃ§Ã£o invÃ¡lida, escolha uma opÃ§Ã£o vÃ¡lida.");
+                System.out.println("Opção inválida, escolha uma opção válida.");
             }
         }
         entrada.close();
@@ -64,9 +65,9 @@ public class Main {
         System.out.println("3) Adicionar estoque de um produto");
         System.out.println("4) Remover produto");
         System.out.println("5) Vender produto");
-        System.out.println("6) RelatÃ³rio de compra e vendas");
+        System.out.println("6) Relatório de compra e vendas");
         System.out.println("7) Sair do programa");
-        System.out.print("\nEscolha uma opÃ§Ã£o: ");
+        System.out.print("\nEscolha uma opção: ");
     }
 
     private static void criarArquivo() {
