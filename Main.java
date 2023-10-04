@@ -4,7 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-
+/*Pedro Henrique
+- Márcio Vitor de S. Nascimento
+- Luiz Neto
+- Ramon Gonçalves
+- Sairo Soares
+- Vinicius Cândido Firmino
+- Carlos Daniel
+*/
 public class Main {
 	public static void main(String[] args) {
 		criarArquivo();
